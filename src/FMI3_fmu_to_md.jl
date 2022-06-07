@@ -26,24 +26,20 @@ function fmi3GetVariableNamingConvention(fmu::FMU3)
     fmi3GetVariableNamingConvention(fmu.modelDescription)
 end
 
-function fmi3GetNumberOfEventIndicators(fmu::FMU3)
-    fmi3GetNumberOfEventIndicators(fmu.modelDescription)
-end
-
 function fmi3CanGetSetState(fmu::FMU3)
     fmi3CanGetSetState(fmu.modelDescription)
 end
 
-function fmi3CanSerializeFMUState(fmu::FMU3)
-    fmi3CanSerializeFMUState(fmu.modelDescription)
+function fmi3CanSerializeFMUstate(fmu::FMU3)
+    fmi3CanSerializeFMUstate(fmu.modelDescription)
 end
 
-function fmi3ProvidesDirectionalDerivatives(fmu::FMU3)
-    fmi3ProvidesDirectionalDerivatives(fmu.modelDescription)
+function fmi3ProvidesDirectionalDerivative(fmu::FMU3)
+    fmi3ProvidesDirectionalDerivative(fmu.modelDescription)
 end
 
-function fmi3ProvidesAdjointDerivatives(fmu::FMU3)
-    fmi3ProvidesAdjointDerivatives(fmu.modelDescription)
+function fmi3ProvidesAdjointDerivative(fmu::FMU3)
+    fmi3ProvidesAdjointDerivative(fmu.modelDescription)
 end
 
 function fmi3IsCoSimulation(fmu::FMU3)
