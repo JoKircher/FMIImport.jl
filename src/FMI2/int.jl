@@ -1380,14 +1380,14 @@ ToDo
 """
 function fmi2GetStatus(c::FMU2Component, s::fmi2StatusKind)
     rtype = nothing
-    if s == fmi2Terminated
+    if s == FMICore.fmi2StatusKindTerminated
         rtype = fmi2Boolean
     else
         @assert false "fmi2GetStatus(_, $(s)): StatusKind $(s) not implemented yet, please open an issue."
     end
     value = zeros(rtype, 1)
 
-    status = fmi2Error
+    status = fmi2StatusError
     if rtype == fmi2Boolean
         status = fmi2GetStatus!(c, s, value)
     end

@@ -1308,15 +1308,15 @@ See also [`fmi2GetStatus!`](@ref).
 """
 function fmi2GetStatus!(c::FMU2Component, s::fmi2StatusKind, value)
     rtype = nothing
-    if s == fmi2Terminated
-        rtype = fmi2Boolean
+    if s == fmi2StatusKindTerminated
+        rtype = Vector{fmi2Boolean}
     else
         @assert false "fmi2GetStatus!(_, $(s), $(value)): StatusKind $(s) not implemented yet, please open an issue."
     end
     @assert typeof(value) == rtype "fmi2GetStatus!(_, $(s), $(value)): Type of value ($(typeof(value))) doesn't fit type of return type $(rtype). Change type of value to $(rtype) or change status kind."
 
-    status = fmi2Error
-    if rtype == fmi2Boolean
+    status = fmi2StatusError
+    if rtype == Vector{fmi2Boolean}
         status = fmi2GetStatus!(c.fmu.cGetRealStatus,
                     c.compAddr, s, Ref(value))
         checkStatus(c, status)
