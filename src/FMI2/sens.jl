@@ -123,7 +123,7 @@ function (c::FMU2Component)(;dx::Union{AbstractVector{<:Real}, Nothing}=nothing,
                              u::Union{AbstractVector{<:Real}, Nothing}=nothing,
                              u_refs::Union{AbstractVector{<:fmi2ValueReference}, Nothing}=nothing,
                              t::Union{Real, Nothing}=nothing)
-
+    println("call this function")
     if y_refs != nothing && length(y_refs) > 0
         if y == nothing 
             y = zeros(fmi2Real, length(y_refs))
@@ -161,19 +161,20 @@ function (c::FMU2Component)(;dx::Union{AbstractVector{<:Real}, Nothing}=nothing,
         cRef = pointer_from_objref(c)
         cRef = UInt64(cRef)
     end
-
+    println("cleared first part")
     # ToDo: This is necessary, because NonconvexUtils/ForwardDiff can't handle arguments with type `Nothing`.
     if u == nothing || length(u) <= 0 
         return eval!(cRef, dx, y, y_refs, x, t)
-
+        println("cleared first eval")
     elseif x == nothing || length(x) <= 0 
         return eval!(cRef, dx, y, y_refs, u, u_refs, t)
-
+        println("cleared second eval")
     end
-
+    println("reached Eval")
     return eval!(cRef, dx, y, y_refs, x, u, u_refs, t)
 end
 
+# TODO here is much to do!!!
 function _eval!(cRef::UInt64, 
     dx::Union{AbstractVector{<:Real}, Nothing},
     y::Union{AbstractVector{<:Real}, Nothing},
