@@ -196,6 +196,7 @@ function _eval!(cRef::UInt64,
 
     # set state
     if x != nothing
+        println("try to set state")
         fmi2SetContinuousStates(c, x)
     end
 
@@ -211,6 +212,7 @@ function _eval!(cRef::UInt64,
 
     # get derivative
     if dx != nothing
+        println("try to get derivative")
         if isdual(dx)
             #@info "dx is dual!"
             dx_tmp = collect(ForwardDiff.value(e) for e in dx)
