@@ -123,7 +123,7 @@ function (c::FMU2Component)(;dx::Union{AbstractVector{<:Real}, Nothing}=nothing,
                              u::Union{AbstractVector{<:Real}, Nothing}=nothing,
                              u_refs::Union{AbstractVector{<:fmi2ValueReference}, Nothing}=nothing,
                              t::Union{Real, Nothing}=nothing)
-    println("call this function")
+    #println("call this function")
     if y_refs != nothing && length(y_refs) > 0
         if y == nothing 
             y = zeros(fmi2Real, length(y_refs))
@@ -161,22 +161,22 @@ function (c::FMU2Component)(;dx::Union{AbstractVector{<:Real}, Nothing}=nothing,
         cRef = pointer_from_objref(c)
         cRef = UInt64(cRef)
     end
-    println("cleared first part")
+    #println("cleared first part")
     # ToDo: This is necessary, because NonconvexUtils/ForwardDiff can't handle arguments with type `Nothing`.
     if u == nothing || length(u) <= 0 
         if length(c.fmu.modelDescription.stateValueReferences) > 0
             return eval!(cRef, dx, y, y_refs, x, t)
         else
-            println("cleared first eval")
+            #println("cleared first eval")
             x = eval!(cRef, dx, y, y_refs, x, t)
-            println(x)
+            #println(x)
             return x
         end
     elseif x == nothing || length(x) <= 0 
-        println("cleared second eval")
+        #println("cleared second eval")
         return eval!(cRef, dx, y, y_refs, u, u_refs, t)
     end
-    println("reached Eval")
+    #println("reached Eval")
     return eval!(cRef, dx, y, y_refs, x, u, u_refs, t)
 end
 
@@ -203,15 +203,15 @@ function _eval!(cRef::UInt64,
     if length(c.fmu.modelDescription.stateValueReferences) > 0
         # set state
         if x != nothing
-            println("try to set state")
+            #println("try to set state")
             fmi2SetContinuousStates(c, x)
-            println(c.state)
+            #println(c.state)
         end
     else
-        println("perfect")
+        #println("perfect")
     end
 
-    println(c.state)
+    #println(c.state)
 
     # set time
     if t != nothing && t >= 0.0
@@ -226,22 +226,22 @@ function _eval!(cRef::UInt64,
     if length(c.fmu.modelDescription.stateValueReferences) > 0
         # get derivative
         if dx != nothing
-            println("try to get derivative")
-            println(dx)
+            #println("try to get derivative")
+            #println(dx)
             if isdual(dx)
                 #@info "dx is dual!"
                 dx_tmp = collect(ForwardDiff.value(e) for e in dx)
-                println(dx_tmp)
+                #println(dx_tmp)
                 fmi2GetDerivatives!(c, dx_tmp)
                 T, V, N = fd_eltypes(dx)
-                println(length(dx))
+                #println(length(dx))
                 dx[:] = collect(ForwardDiff.Dual{T, V, N}(dx_tmp[i], ForwardDiff.partials(dx[i])    ) for i in 1:length(dx))
             else 
                 fmi2GetDerivatives!(c, dx)
             end
         end
     else
-        println("perfect")
+        #println("perfect")
     end
 
     # get output 
@@ -249,12 +249,12 @@ function _eval!(cRef::UInt64,
         if isdual(y)
             @info "y is dual!"
             y_tmp = collect(ForwardDiff.value(e) for e in y)
-            println("get Outputs")
+            #println("get Outputs")
             fmi2GetReal!(c, y_refs, y_tmp)
             T, V, N = fd_eltypes(y)
             y[:] = collect(ForwardDiff.Dual{T, V, N}(y_tmp[i], ForwardDiff.partials(y[i])    ) for i in 1:length(y))
         else 
-            println("try to get output of $y")
+            #println("try to get output of $y")
             if !isa(y, AbstractVector{fmi2Real})
                 y = convert(Vector{fmi2Real}, y)
             end
@@ -262,7 +262,7 @@ function _eval!(cRef::UInt64,
         end
     end
 
-    println("skipped output")
+    #println("skipped output")
 
     if isnothing(y)
         y = Array{Float64, 1}()
@@ -271,13 +271,13 @@ function _eval!(cRef::UInt64,
     if isnothing(dx)
         dx = Array{Float64, 1}()
     end
-    println("reached return")
+    #println("reached return")
 
     if c.fmu.executionConfig.concat_y_dx
-        println("return $y and $dx separately")
+        #println("return $y and $dx separately")
         return vcat(y, dx) # [y..., dx...]
     else
-        println("return $y and $dx separately")
+        #println("return $y and $dx separately")
         return y, dx
     end
 end
